@@ -40,7 +40,7 @@ public abstract class Server implements CommunicationProtocol {
      * Init the server and open connection to MySQL
      * @param address 
      */
-    public void init(String address) {
+    protected void init() {
         try {
             connection = DriverManager.getConnection("jdbc:mysql://localhost/detector-grid?"
                         + "user=root&password=");

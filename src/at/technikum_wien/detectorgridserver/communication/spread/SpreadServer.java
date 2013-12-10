@@ -50,10 +50,9 @@ public class SpreadServer extends Server implements BasicMessageListener {
      */
     protected SpreadGroup listenSpreadGroup = null;
     
-    @Override
     public void init(String address) {
         try {
-            super.init(address);
+            super.init();
             // open the connection to the spread daemon
             spreadConnection = new SpreadConnection();
             spreadConnection.connect(InetAddress.getByName(address), 0, "server", true, false);
