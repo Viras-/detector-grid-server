@@ -21,6 +21,7 @@ import at.technikum_wien.detectorgrid.TagInformation;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -35,7 +36,7 @@ public abstract class Server implements CommunicationProtocol {
      * Reference to MySQL connection
      */
     Connection connection = null;
-
+    
     /**
      * Init the server and open connection to MySQL
      * @param address 
@@ -83,14 +84,26 @@ public abstract class Server implements CommunicationProtocol {
     public void foundTag(TagInformation tagInformation) {
         PreparedStatement prepStmt = null;
         try {
+            int reader_id = 0;
+            
+            prepStmt = connection.prepareStatement("SELECT `reader_id` FROM `tbl_reader` WHERE `uuid` = ?");
+            prepStmt.setString(1, tagInformation.readerId);
+            ResultSet rs = prepStmt.executeQuery();
+            if( rs.next() ) {
+                reader_id = rs.getInt("reader_id");
+            }
+            else {
+                throw new Exception("Invalid UUID from reader");
+            }
+            
             prepStmt = connection.prepareStatement("INSERT INTO `tbl_tag_occurence` (`oid`, `strength`, `seenTick`, `reader_id`) values (?, ?, ?, ?)");
             prepStmt.setInt(1, Integer.parseInt(tagInformation.tagCode));
             prepStmt.setInt(2, tagInformation.distance);
             prepStmt.setInt(3, tagInformation.seenTick);
-            prepStmt.setInt(4, 1);
+            prepStmt.setInt(4, reader_id);
             
             prepStmt.execute();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
         
