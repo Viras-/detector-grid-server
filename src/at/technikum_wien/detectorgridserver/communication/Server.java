@@ -96,7 +96,7 @@ public abstract class Server implements CommunicationProtocol {
                 throw new Exception("Invalid UUID from reader");
             }
             
-            prepStmt = connection.prepareStatement("INSERT INTO `tbl_tag_occurence` (`oid`, `strength`, `seenTick`, `reader_id`) values (?, ?, ?, ?)");
+            prepStmt = connection.prepareStatement("REPLACE INTO `tbl_tag_occurence` (`oid`, `strength`, `seenTick`, `reader_id`) values (?, ?, ?, ?)");
             prepStmt.setInt(1, Integer.parseInt(tagInformation.tagCode));
             prepStmt.setInt(2, tagInformation.distance);
             prepStmt.setInt(3, tagInformation.seenTick);
